@@ -4,14 +4,24 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.springframework.cache.interceptor.CacheErrorHandler;
+import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.interceptor.KeyGenerator;
+import org.springframework.cache.interceptor.SimpleCacheErrorHandler;
+import org.springframework.cache.interceptor.SimpleCacheResolver;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
+import org.springframework.cache.support.CompositeCacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Tushar Chokshi @ 4/12/15.
@@ -31,6 +41,9 @@ CachingConfigurer offers additional customization options: it is recommended to 
 
 To understand how spring takes care of @EnableCaching, read SampleSpringCoreProject's readme.txt - read how @Configuration is processed by spring
  */
+
+// Spring doesn't allow to have multiple CachingConfigurers.
+
 @Configuration
 @ComponentScan
 @EnableCaching
@@ -43,18 +56,55 @@ public class CachingConfiguration implements CachingConfigurer // OR extends Cac
         return new ConcurrentMapCacheManager("books");
     }
     */
+    // example of multiple CacheManagers
     @Bean
     public CacheManager cacheManager() {
         // configure and return an implementation of Spring's CacheManager SPI
-        SimpleCacheManager cacheManager = new SimpleCacheManager();
-        cacheManager.setCaches(Arrays.asList(new ConcurrentMapCache("default"), new ConcurrentMapCache("books")));
-        return cacheManager;
+        CompositeCacheManager compositeCacheManager = new CompositeCacheManager();
+
+        List<CacheManager> cacheManagers = new ArrayList<CacheManager>();
+        cacheManagers.add(simpleCacheManager());
+        cacheManagers.add(ehCacheCacheManager());
+
+        compositeCacheManager.setCacheManagers(cacheManagers);
+        return compositeCacheManager;
+
     }
 
-    @Override
+    @Bean
+    public SimpleCacheManager simpleCacheManager() {
+        SimpleCacheManager simpleCacheManager = new SimpleCacheManager();
+        simpleCacheManager.setCaches(Arrays.asList(new ConcurrentMapCache("default"), new ConcurrentMapCache("books")));
+        return simpleCacheManager;
+    }
+
+    @Bean
+    public EhCacheCacheManager ehCacheCacheManager() {
+        return new EhCacheCacheManager(ehCacheManagerFactoryBean().getObject());
+    }
+
+    @Bean
+    public EhCacheManagerFactoryBean ehCacheManagerFactoryBean() {
+        EhCacheManagerFactoryBean cacheManagerFactoryBean = new EhCacheManagerFactoryBean();
+        cacheManagerFactoryBean.setConfigLocation(new ClassPathResource("ehcache.xml"));
+        cacheManagerFactoryBean.setShared(true);
+        return cacheManagerFactoryBean;
+    }
+
+    @Bean
+    public CacheResolver cacheResolver() {
+        return new SimpleCacheResolver(cacheManager());
+    }
+
+    @Bean
     public KeyGenerator keyGenerator() {
         // return new MyKeyGenerator();
         return new SimpleKeyGenerator();
+    }
+
+    @Bean
+    public CacheErrorHandler errorHandler() {
+        return new SimpleCacheErrorHandler();
     }
 
 }

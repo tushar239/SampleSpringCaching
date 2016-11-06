@@ -15,8 +15,8 @@
 	<!-- simple (generic) cache manager example.
 		SimpleCacheManager actually allows to define caches of different type. You can set one cache of ConcurrentMap and another of EhCache. 
 		You can also use ConcurrentMapCacheManager for specifically ConcurrentMap type cache, just as EhCacheCacheManager is used specifically for EhCache.
-	
-	<bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+	-->
+	<bean id="simpleCacheManager" class="org.springframework.cache.support.SimpleCacheManager">
 	  <property name="caches">
 	    <set>
 	      <bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean" p:name="default"/>
@@ -24,7 +24,7 @@
 	    </set>
 	  </property>
 	</bean>
-	-->
+
 
 
 

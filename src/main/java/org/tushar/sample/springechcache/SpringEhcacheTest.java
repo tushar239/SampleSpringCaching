@@ -1,9 +1,6 @@
 package org.tushar.sample.springechcache;
 
-import java.util.List;
-
 import net.sf.ehcache.Ehcache;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
@@ -11,6 +8,8 @@ import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.List;
 
 public class SpringEhcacheTest {
 

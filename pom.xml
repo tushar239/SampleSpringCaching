@@ -9,7 +9,7 @@
   <url>http://maven.apache.org</url>
   	<properties>
 		<ehcache.version>2.4.2</ehcache.version>
-		<spring.version>4.0.0.RELEASE</spring.version>
+		<spring.version>4.2.6.RELEASE</spring.version>
 	</properties>
 
 	<dependencies>

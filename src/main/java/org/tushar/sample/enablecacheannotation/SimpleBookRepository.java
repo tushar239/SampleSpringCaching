@@ -9,8 +9,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class SimpleBookRepository implements BookRepository  {
 
-    @Override
-    @Cacheable(value="books", key = "#isbn") // This will register the Book instance with key as passed isbn inside cache name 'books'
+    // if there are multiple cache managers, then you can force CacheResolver to use one of them using 'cacheManager' attribute.
+    // Otherwise, CacheResolver will use any CacheManager with which cache name=books is found.
+    @Cacheable(value="books", key = "#isbn"/*, cacheManager = "ehCacheCacheManager"*/) // This will register the Book instance with key as passed isbn inside cache name 'books'
     public Book getByIsbn(String isbn) {
         simulateSlowService();
         return new Book(isbn, "Some book");

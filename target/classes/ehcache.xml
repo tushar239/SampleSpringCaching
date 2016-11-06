@@ -35,4 +35,11 @@
 			eternal="false" 
 			overflowToDisk="false" 
 			memoryStoreEvictionPolicy="LFU" />
+
+    <cache name="books"
+           maxElementsInMemory="50"
+           eternal="false"
+           overflowToDisk="false"
+           memoryStoreEvictionPolicy="LFU" />
+
 </ehcache>
